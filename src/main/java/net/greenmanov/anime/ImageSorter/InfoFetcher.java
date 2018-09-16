@@ -66,14 +66,11 @@ public class InfoFetcher {
             try (Stream<Path> paths = Files.walk(from)) {
                 List<Path> pathList = paths
                         .filter(Files::isRegularFile)
-                        .filter(this::isImage)
+                        .filter(Filters::isImage)
+                        .filter(file -> file.getParent().equals(from))
                         .collect(Collectors.toList());
                 this.needDelay = false;
                 for (Path file: pathList) {
-                    if (!file.getParent().equals(from)) {
-                        //Skip sub dirs
-                        continue;
-                    }
                     if (delay > 0 && this.needDelay) {
                         Thread.sleep(delay);
                     }
@@ -130,22 +127,6 @@ public class InfoFetcher {
         }
     }
 
-    /**
-     * Check if file is image using mime type
-     * @param file File Path
-     * @return true if image
-     */
-    protected boolean isImage(Path file) {
-        String mimetype = null;
-        try {
-            mimetype = Files.probeContentType(file);
-        } catch (IOException e) {
-            LOGGER.warn("Can't decide if file " + file.getFileName() + " is image", e);
-            return false;
-        }
-
-        return mimetype != null && mimetype.split("/")[0].equals("image");
-    }
 
     /**
      * Return actual date
