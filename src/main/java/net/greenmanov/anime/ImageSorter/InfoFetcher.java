@@ -2,10 +2,7 @@ package net.greenmanov.anime.ImageSorter;
 
 import net.greenmanov.anime.ImageSorter.json.AutosaveDatabase;
 import net.greenmanov.anime.ImageSorter.json.JsonDatabase;
-import net.greenmanov.iqdb.api.IIqdbApi;
-import net.greenmanov.iqdb.api.IqdbApi;
-import net.greenmanov.iqdb.api.Match;
-import net.greenmanov.iqdb.api.Options;
+import net.greenmanov.iqdb.api.*;
 import net.greenmanov.iqdb.parsers.IParser;
 import net.greenmanov.iqdb.parsers.impl.DynamicParser;
 import org.apache.logging.log4j.LogManager;
@@ -104,6 +101,10 @@ public class InfoFetcher {
             this.needDelay = true;
             List<Match> matches = api.searchFile(filePath.toFile(), Options.DEFAULT);
             Match best = matches.get(0);
+            // TODO: Remove when support for The Anime Gallery added
+            if (ServiceType.getTypeByUrl(best.getUrl()) == ServiceType.THE_ANIME_GALLERY) {
+                best = matches.get(1);
+            }
             if (best == null || best.getSimilarity() < minSimilarity) {
                 LOGGER.info("No match: " + filePath.getFileName());
                 if (noMatchDir != null) {
