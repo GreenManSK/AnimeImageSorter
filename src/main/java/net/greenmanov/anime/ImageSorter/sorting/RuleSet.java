@@ -43,6 +43,8 @@ public class RuleSet {
         for (IRule rule : rules) {
             if (rule.match(image)) {
                 match = match == null || match.getPriority() < rule.getPriority() ? rule : match;
+            } else {
+                return null;
             }
         }
         return match;
