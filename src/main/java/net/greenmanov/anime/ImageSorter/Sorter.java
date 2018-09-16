@@ -38,6 +38,9 @@ public class Sorter {
             } catch (IOException e) {
                 LOGGER.error("Can't load image database", e);
             }
+            for (Dir dir: dirs) {
+                dir.getDatabase().save(true);
+            }
         } catch (IOException e) {
             LOGGER.error("Can't build directory map", e);
         }
