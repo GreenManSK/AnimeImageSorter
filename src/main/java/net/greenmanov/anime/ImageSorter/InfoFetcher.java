@@ -19,12 +19,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Fetch info about anime images
+ */
 public class InfoFetcher {
     private static final Logger LOGGER = LogManager.getLogger(InfoFetcher.class.getName());
 
     protected JsonDatabase database;
     protected IIqdbApi api;
-    protected boolean needDealy;
+    protected boolean needDelay;
 
     public InfoFetcher() {
     }
@@ -65,17 +68,17 @@ public class InfoFetcher {
                         .filter(Files::isRegularFile)
                         .filter(this::isImage)
                         .collect(Collectors.toList());
-                this.needDealy = false;
+                this.needDelay = false;
                 for (Path file: pathList) {
                     if (!file.getParent().equals(from)) {
                         //Skip sub dirs
                         continue;
                     }
-                    if (delay > 0 && this.needDealy) {
+                    if (delay > 0 && this.needDelay) {
                         Thread.sleep(delay);
                     }
                     this.fetchFile(file, to, minSimilarity, noMatchDir);
-                    this.needDealy = false;
+                    this.needDelay = false;
                 }
             } catch (IOException e) {
                 LOGGER.error("Problem while reading files form directory", e);
@@ -101,7 +104,7 @@ public class InfoFetcher {
         }
         LOGGER.info("Fetching file: " + filePath.getFileName());
         try {
-            this.needDealy = true;
+            this.needDelay = true;
             List<Match> matches = api.searchFile(filePath.toFile(), Options.DEFAULT);
             Match best = matches.get(0);
             if (best == null || best.getSimilarity() < minSimilarity) {
