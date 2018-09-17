@@ -1,6 +1,6 @@
 package net.greenmanov.anime.ImageSorter.sorting;
 
-import net.greenmanov.anime.ImageSorter.Image;
+import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.iqdb.parsers.Tag;
 
 final public class RuleAll implements IRule {

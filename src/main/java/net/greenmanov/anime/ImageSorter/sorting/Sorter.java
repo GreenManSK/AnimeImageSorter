@@ -1,9 +1,9 @@
-package net.greenmanov.anime.ImageSorter;
+package net.greenmanov.anime.ImageSorter.sorting;
 
+import net.greenmanov.anime.ImageSorter.helpers.Filters;
+import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.anime.ImageSorter.json.AutosaveDatabase;
 import net.greenmanov.anime.ImageSorter.json.JsonDatabase;
-import net.greenmanov.anime.ImageSorter.sorting.Dir;
-import net.greenmanov.anime.ImageSorter.sorting.IRule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

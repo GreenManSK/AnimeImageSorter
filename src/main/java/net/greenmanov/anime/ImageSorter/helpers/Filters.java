@@ -1,4 +1,4 @@
-package net.greenmanov.anime.ImageSorter;
+package net.greenmanov.anime.ImageSorter.helpers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +16,7 @@ public class Filters {
      * @param file File Path
      * @return true if image
      */
-    protected static boolean isImage(Path file) {
+    public static boolean isImage(Path file) {
         String mimetype = null;
         try {
             mimetype = Files.probeContentType(file);

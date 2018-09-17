@@ -1,4 +1,4 @@
-package net.greenmanov.anime.ImageSorter;
+package net.greenmanov.anime.ImageSorter.helpers;
 
 import net.greenmanov.iqdb.parsers.Tag;
 import org.apache.logging.log4j.LogManager;

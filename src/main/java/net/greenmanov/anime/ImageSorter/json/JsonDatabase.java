@@ -1,6 +1,6 @@
 package net.greenmanov.anime.ImageSorter.json;
 
-import net.greenmanov.anime.ImageSorter.Image;
+import net.greenmanov.anime.ImageSorter.helpers.Image;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
