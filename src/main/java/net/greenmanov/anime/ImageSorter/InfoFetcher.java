@@ -100,12 +100,11 @@ public class InfoFetcher {
         try {
             this.needDelay = true;
             List<Match> matches = api.searchFile(filePath.toFile(), Options.DEFAULT);
-            Match best = matches.get(0);
+
+            Match best = !matches.isEmpty() ? matches.get(0) : null;
+
             // TODO: Remove when support for The Anime Gallery added
-            if (ServiceType.getTypeByUrl(best.getUrl()) == ServiceType.THE_ANIME_GALLERY) {
-                best = matches.get(1);
-            }
-            if (best == null || best.getSimilarity() < minSimilarity) {
+            if (best == null || ServiceType.getTypeByUrl(best.getUrl()) == ServiceType.THE_ANIME_GALLERY || best.getSimilarity() < minSimilarity) {
                 LOGGER.info("No match: " + filePath.getFileName());
                 if (noMatchDir != null) {
                     moveFile(filePath, noMatchDir);
