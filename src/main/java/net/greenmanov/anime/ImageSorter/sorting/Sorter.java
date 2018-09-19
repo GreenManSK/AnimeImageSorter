@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class Sorter {
@@ -108,16 +110,22 @@ public class Sorter {
      * @throws IOException
      */
     protected List<Dir> buildDirMap(Path to) throws IOException {
-        List<Dir> dirs = new ArrayList<>();
+        Map<Path, Dir> dirs = new HashMap<>();
         try (Stream<Path> paths = Files.walk(to)) {
             paths.filter(Files::isDirectory).forEach(path -> {
                 try {
-                    dirs.add(new Dir(path));
+                    Dir dir = new Dir(path);
+                    dirs.put(path, dir);
+                    Path parent = path.resolve("../");
+                    while (dirs.containsKey(parent)) {
+                        dir.getRuleSet().add(dirs.get(parent).getRuleSet());
+                        parent = parent.resolve("../");
+                    }
                 } catch (IOException e) {
                     LOGGER.error("Can't build RuleSet for directory " + path, e);
                 }
             });
-            return dirs;
+            return new ArrayList<>(dirs.values());
         }
     }
 

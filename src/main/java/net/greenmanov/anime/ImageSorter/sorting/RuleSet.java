@@ -51,6 +51,14 @@ public class RuleSet {
     }
 
     /**
+     * Adds all rules from set into this set
+     * @param ruleSet RuleSet
+     */
+    public void add(RuleSet ruleSet) {
+        this.rules.addAll(ruleSet.rules);
+    }
+
+    /**
      * Load rule set from file or directory
      *
      * @param path Path

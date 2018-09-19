@@ -37,6 +37,8 @@ public class HumanInfoFetcher extends AFetcher {
      */
     @Override
     protected void fetchFile(Path filePath, Path to, int minSimilarity, Path noMatchDir) throws InterruptedException {
+        if (database.get(filePath.getFileName().toString()) != null)
+            return;
         textTerminal.println("Image: " + filePath.getFileName());
         ImageAction action;
         do {
