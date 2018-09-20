@@ -2,12 +2,13 @@ package net.greenmanov.anime.ImageSorter.sorting;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.iqdb.parsers.Tag;
+import org.json.JSONObject;
 
-public class RuleNone implements IRule {
+final public class AllRule implements IRule {
 
     protected int priority;
 
-    public RuleNone(int priority) {
+    public AllRule(int priority) {
         this.priority = priority;
     }
 
@@ -17,11 +18,15 @@ public class RuleNone implements IRule {
 
     @Override
     public boolean match(Tag tag) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean match(Image image) {
-        return false;
+        return true;
+    }
+
+    public static AllRule fromJson(JSONObject object) {
+        return new AllRule(object.optInt(RULE_PRIORITY, 0));
     }
 }

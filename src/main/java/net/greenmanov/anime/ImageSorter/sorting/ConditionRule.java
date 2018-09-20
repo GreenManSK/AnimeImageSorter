@@ -4,6 +4,7 @@ import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.iqdb.parsers.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -13,6 +14,8 @@ import java.io.StringWriter;
 
 public class ConditionRule implements IRule {
     private static final Logger LOGGER = LogManager.getLogger(ConditionRule.class.getName());
+
+    public static final String RULE_CONDITION = "condition";
 
     private String rule;
     private int priority;
@@ -51,5 +54,10 @@ public class ConditionRule implements IRule {
     @Override
     public int getPriority() {
         return priority;
+    }
+
+    public static ConditionRule fromJson(JSONObject object) {
+        return new ConditionRule(object.optString(RULE_CONDITION, "true"),
+                object.optInt(RULE_PRIORITY,0));
     }
 }

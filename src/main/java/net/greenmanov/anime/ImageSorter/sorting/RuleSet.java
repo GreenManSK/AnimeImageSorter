@@ -18,10 +18,6 @@ import java.util.List;
  */
 public class RuleSet {
     public static final String RULE_TYPE = "type";
-    public static final String RULE_PRIORITY = "priority";
-    public static final String RULE_TAG_TYPE = "tagType";
-    public static final String RULE_TAG_VALUE = "tagValue";
-    public static final String RULE_CONDITION = "condition";
 
     public static final String DEFAULT_FILE = "filter.json";
 
@@ -79,31 +75,25 @@ public class RuleSet {
             JSONObject object = rules.getJSONObject(i);
             switch (object.getString(RULE_TYPE)) {
                 case "ALL":
-                    ruleSet.addRule(new RuleAll(object.optInt(RULE_PRIORITY, 0)));
+                    ruleSet.addRule(AllRule.fromJson(object));
                     break;
                 case "NONE":
-                    ruleSet.addRule(new RuleNone(object.optInt(RULE_PRIORITY, 0)));
+                    ruleSet.addRule(NoneRule.fromJson(object));
                     break;
                 case "TAG":
-                    ruleSet.addRule(
-                            new Rule(new Tag(TagType.valueOf(object.optString(RULE_TAG_TYPE)),
-                                    object.optString(RULE_TAG_VALUE)),
-                                    object.optInt(RULE_PRIORITY, 0))
-                    );
+                    ruleSet.addRule(TagRule.fromJson(object));
                     break;
                 case "MULTI_TAG":
-                    JSONArray tags = object.getJSONArray(RULE_TAG_VALUE);
-                    for (int j = 0; j < tags.length(); j++) {
-                        String value = tags.getString(j);
-                        ruleSet.addRule(
-                                new Rule(new Tag(TagType.valueOf(object.optString(RULE_TAG_TYPE)), value),
-                                        object.optInt(RULE_PRIORITY, 0))
-                        );
-                    }
+                    ruleSet.addRule(MultiTagRule.fromJson(object));
+                    break;
+                case "MULTI_TAG_AND":
+                    ruleSet.addRule(MultiTagAndRule.fromJson(object));
+                    break;
+                case "MULTI_TAG_ONLY":
+                    ruleSet.addRule(MultiTagOnlyRule.fromJson(object));
                     break;
                 case "CONDITION":
-                    ruleSet.addRule(new ConditionRule(object.optString(RULE_CONDITION, "true"),
-                            object.optInt(RULE_PRIORITY,0)));
+                    ruleSet.addRule(ConditionRule.fromJson(object));
                     break;
             }
         }

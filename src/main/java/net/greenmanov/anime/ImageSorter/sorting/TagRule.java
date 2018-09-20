@@ -2,14 +2,20 @@ package net.greenmanov.anime.ImageSorter.sorting;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.iqdb.parsers.Tag;
+import net.greenmanov.iqdb.parsers.TagType;
+import org.json.JSONObject;
 
 import java.util.Objects;
 
-public class Rule implements IRule {
+
+public class TagRule implements IRule {
+    public static final String RULE_TAG_TYPE = "tagType";
+    public static final String RULE_TAG_VALUE = "tagValue";
+
     protected Tag tag;
     protected int priority;
 
-    public Rule(Tag tag, int priority) {
+    public TagRule(Tag tag, int priority) {
         this.tag = tag;
         this.priority = priority;
     }
@@ -31,12 +37,18 @@ public class Rule implements IRule {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Rule rule = (Rule) o;
+        TagRule rule = (TagRule) o;
         return match(rule.tag);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(tag, priority);
+    }
+
+    public static TagRule fromJson(JSONObject object) {
+        return new TagRule(new Tag(TagType.valueOf(object.optString(RULE_TAG_TYPE)),
+                object.optString(RULE_TAG_VALUE)),
+                object.optInt(RULE_PRIORITY, 0));
     }
 }
