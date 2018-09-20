@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.github.GreenManSK</groupId>
             <artifactId>Java-IqdbApi</artifactId>
-            <version>e674c9b018</version>
+            <version>d3c3f7449c</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

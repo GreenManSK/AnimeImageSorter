@@ -21,6 +21,7 @@ public class RuleSet {
     public static final String RULE_PRIORITY = "priority";
     public static final String RULE_TAG_TYPE = "tagType";
     public static final String RULE_TAG_VALUE = "tagValue";
+    public static final String RULE_CONDITION = "condition";
 
     public static final String DEFAULT_FILE = "filter.json";
 
@@ -42,7 +43,10 @@ public class RuleSet {
         IRule match = null;
         for (IRule rule : rules) {
             if (rule.match(image)) {
-                match = match == null || match.getPriority() < rule.getPriority() ? rule : match;
+//                match = match == null || match.getPriority() < rule.getPriority() ? rule : match;
+                if (match == null || match.getPriority() < rule.getPriority()) {
+                    match = rule;
+                }
             } else {
                 return null;
             }
@@ -96,6 +100,10 @@ public class RuleSet {
                                         object.optInt(RULE_PRIORITY, 0))
                         );
                     }
+                    break;
+                case "CONDITION":
+                    ruleSet.addRule(new ConditionRule(object.optString(RULE_CONDITION, "true"),
+                            object.optInt(RULE_PRIORITY,0)));
                     break;
             }
         }

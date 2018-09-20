@@ -48,7 +48,7 @@ public class JsonConvertor {
     public static Tag toTag(JSONObject json) {
         return new Tag(
                 TagType.valueOf(json.getString(TAG_TYPE)),
-                json.getString(TAG_NAME).replace(' ', '_')
+                json.getString(TAG_NAME).replace(' ', '_').toLowerCase()
         );
     }
 

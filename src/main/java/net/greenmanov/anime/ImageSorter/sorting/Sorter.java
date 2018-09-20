@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sorter {
@@ -43,6 +44,7 @@ public class Sorter {
             for (Dir dir: dirs) {
                 dir.getDatabase().save(true);
             }
+            database.save(true);
         } catch (IOException e) {
             LOGGER.error("Can't build directory map", e);
         }
@@ -114,9 +116,12 @@ public class Sorter {
         try (Stream<Path> paths = Files.walk(to)) {
             paths.filter(Files::isDirectory).forEach(path -> {
                 try {
+                    if (!path.resolve(RuleSet.DEFAULT_FILE).toFile().exists()) {
+                        return;
+                    }
                     Dir dir = new Dir(path);
                     dirs.put(path, dir);
-                    Path parent = path.resolve("../");
+                    Path parent = path.getParent();
                     while (dirs.containsKey(parent)) {
                         dir.getRuleSet().add(dirs.get(parent).getRuleSet());
                         parent = parent.resolve("../");
