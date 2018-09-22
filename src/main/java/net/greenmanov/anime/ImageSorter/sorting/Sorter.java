@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sorter {
@@ -60,6 +59,10 @@ public class Sorter {
             LOGGER.info("Not in database: " + file.getFileName());
             return;
         }
+        if (image.getTags().size() == 0) {
+            LOGGER.info("Not tags for sorting: " + file.getFileName());
+            return;
+        }
         Dir best = getBest(image);
         if (best == null) {
             LOGGER.info("No matching directory: " + file.getFileName());
@@ -100,6 +103,11 @@ public class Sorter {
             if (matchingRule != null && matchingRule.getPriority() > priority) {
                 priority = matchingRule.getPriority();
                 result = dir;
+            } else if (matchingRule != null && matchingRule.getPriority() == priority) {
+                if (dir.getRuleSet().size() > result.getRuleSet().size()) {
+                    priority = matchingRule.getPriority();
+                    result = dir;
+                }
             }
         }
         return result;

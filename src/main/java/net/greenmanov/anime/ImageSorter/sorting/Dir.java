@@ -2,11 +2,15 @@ package net.greenmanov.anime.ImageSorter.sorting;
 
 import net.greenmanov.anime.ImageSorter.json.AutosaveDatabase;
 import net.greenmanov.anime.ImageSorter.json.JsonDatabase;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 public class Dir {
+    private static final Logger LOGGER = LogManager.getLogger(Dir.class.getName());
     protected Path path;
     protected RuleSet ruleSet;
     protected JsonDatabase database;
@@ -18,7 +22,12 @@ public class Dir {
 
     protected void load() throws IOException {
         database = new AutosaveDatabase(this.path.resolve(JsonDatabase.DEFAULT_NAME));
-        ruleSet = RuleSet.loadRuleSet(this.path);
+        try {
+            ruleSet = RuleSet.loadRuleSet(this.path);
+        } catch (JSONException e) {
+            LOGGER.error("Invalid " + JsonDatabase.DEFAULT_NAME + " in path " + path,e);
+            throw e;
+        }
     }
 
     public Path getPath() {

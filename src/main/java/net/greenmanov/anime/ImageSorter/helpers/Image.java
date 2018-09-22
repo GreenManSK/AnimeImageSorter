@@ -40,7 +40,7 @@ public class Image {
             BufferedImage image = ImageIO.read(file.toFile());
             this.width = image.getWidth();
             this.height = image.getHeight();
-        } catch (IOException e) {
+        } catch (IOException|IllegalArgumentException e) {
             LOGGER.warn("Can't get resolution of file " + this.name, e);
         }
     }

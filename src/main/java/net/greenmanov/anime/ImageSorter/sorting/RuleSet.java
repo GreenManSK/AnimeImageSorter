@@ -100,4 +100,8 @@ public class RuleSet {
         return ruleSet;
     }
 
+    public int size() {
+        return rules.size();
+    }
+
 }

@@ -64,19 +64,21 @@ public class InfoFetcher extends AFetcher {
             this.needDelay = true;
             List<Match> matches = api.searchFile(filePath.toFile(), Options.DEFAULT);
 
-            Match best = !matches.isEmpty() ? matches.get(0) : null;
-
-            // TODO: Remove when support for The Anime Gallery added
-            if (best == null || ServiceType.getTypeByUrl(best.getUrl()) == ServiceType.THE_ANIME_GALLERY || best.getSimilarity() < minSimilarity) {
-                LOGGER.info("No match: " + filePath.getFileName());
-                if (noMatchDir != null) {
-                    moveFile(filePath, noMatchDir);
+            for (Match match : matches) {
+                if (match.getSimilarity() < minSimilarity) {
+                    break;
                 }
-            } else {
+                // TODO: Remove when support for The Anime Gallery added
+                if  (ServiceType.getTypeByUrl(match.getUrl()) == ServiceType.THE_ANIME_GALLERY) {
+                    continue;
+                }
                 LOGGER.info("Parsing data: " + filePath.getFileName());
                 IParser parser = new DynamicParser();
-                parser.parse(best.getUrl());
-                Image image = new Image(filePath, now(), parser.getSource(), best.getUrl(), parser.getTags());
+                parser.parse(match.getUrl());
+                if (parser.getTags().size() == 0) {
+                    continue;
+                }
+                Image image = new Image(filePath, now(), parser.getSource(), match.getUrl(), parser.getTags());
                 database.add(image);
                 try {
                     moveFile(filePath, to);
@@ -84,6 +86,11 @@ public class InfoFetcher extends AFetcher {
                     LOGGER.error("Could not move file " + filePath.getFileName(), e);
                 }
                 LOGGER.info("Added: " + filePath.getFileName());
+                return;
+            }
+            LOGGER.info("No match: " + filePath.getFileName());
+            if (noMatchDir != null) {
+                moveFile(filePath, noMatchDir);
             }
         } catch (IOException e) {
             LOGGER.error("Can't get info from iqdb for file" + filePath.getFileName(), e);

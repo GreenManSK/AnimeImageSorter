@@ -7,7 +7,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.greenmanov.anime.ImageSorter.sorting.TagRule.RULE_TAG_TYPE;
 import static net.greenmanov.anime.ImageSorter.sorting.TagRule.RULE_TAG_VALUE;
@@ -46,12 +48,13 @@ public class MultiTagRule implements IRule {
     }
 
     public static MultiTagRule fromJson(JSONObject object) {
-        JSONArray tags = object.getJSONArray(RULE_TAG_VALUE);
+        List<String> tags =
+                Arrays.stream(object.getString(RULE_TAG_VALUE).split(",")).map(String::trim).map(String::toLowerCase
+        ).collect(Collectors.toList());
         List<TagRule> rules = new ArrayList<>();
-        for (int j = 0; j < tags.length(); j++) {
-            String value = tags.getString(j);
+        for (String tag : tags) {
             rules.add(
-                    new TagRule(new Tag(TagType.valueOf(object.optString(RULE_TAG_TYPE)), value),
+                    new TagRule(new Tag(TagType.valueOf(object.optString(RULE_TAG_TYPE)), tag),
                             object.optInt(RULE_PRIORITY, 0))
             );
         }
