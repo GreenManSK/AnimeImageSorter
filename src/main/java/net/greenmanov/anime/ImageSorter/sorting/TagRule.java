@@ -48,7 +48,7 @@ public class TagRule implements IRule {
 
     public static TagRule fromJson(JSONObject object) {
         return new TagRule(new Tag(TagType.valueOf(object.optString(RULE_TAG_TYPE)),
-                object.optString(RULE_TAG_VALUE)),
+                object.optString(RULE_TAG_VALUE).toLowerCase()),
                 object.optInt(RULE_PRIORITY, 0));
     }
 }

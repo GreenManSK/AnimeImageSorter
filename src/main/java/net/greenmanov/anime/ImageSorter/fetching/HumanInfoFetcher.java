@@ -13,9 +13,9 @@ import org.beryx.textio.TextTerminal;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 
 public class HumanInfoFetcher extends AFetcher {
     private static final Logger LOGGER = LogManager.getLogger(HumanInfoFetcher.class.getName());
@@ -37,9 +37,11 @@ public class HumanInfoFetcher extends AFetcher {
      */
     @Override
     protected void fetchFile(Path filePath, Path to, int minSimilarity, Path noMatchDir) throws InterruptedException {
-        if (database.get(filePath.getFileName().toString()) != null)
+        Image img = database.get(filePath.getFileName().toString());
+        if (img != null && img.getTags().size() > 0)
             return;
         textTerminal.println("Image: " + filePath.getFileName());
+
         ImageAction action;
         do {
             action = getImageAction();
@@ -82,6 +84,7 @@ public class HumanInfoFetcher extends AFetcher {
             addByHand(file, to);
         }
     }
+
     /**
      * Add image with fetching tags from human being
      *

@@ -21,6 +21,12 @@ public class InfoFetcher extends AFetcher {
     protected boolean needDelay;
     protected int delay;
 
+    protected long files = 0;
+    protected long fetchedFiles = 0;
+
+
+    public static final int MAX_SIZE = 8388608;
+
     public InfoFetcher() {
     }
 
@@ -40,6 +46,7 @@ public class InfoFetcher extends AFetcher {
         this.needDelay = false;
         this.delay = delay;
         super.fetch(from, to, minSimilarity, delay, noMatchDir);
+        LOGGER.info("Finished fetching. Fetched: " + fetchedFiles + "/" + files);
     }
 
     /**
@@ -51,11 +58,16 @@ public class InfoFetcher extends AFetcher {
      * @param noMatchDir    Dir for files without match, can be null
      */
     protected void fetchFile(Path filePath, Path to, int minSimilarity, Path noMatchDir) throws InterruptedException {
+        files++;
+        //@TODO: Add to FilenameFetcher
+        if (filePath.toFile().length() > MAX_SIZE)
+            return;
         if (delay > 0 && this.needDelay) {
             Thread.sleep(delay);
         }
         this.needDelay = false;
-        if (database.get(filePath.getFileName().toString()) != null) {
+        Image img = database.get(filePath.getFileName().toString());
+        if (img != null && img.getTags().size() > 0) {
             LOGGER.info("Already fetched: " + filePath.getFileName());
             return;
         }
@@ -80,6 +92,7 @@ public class InfoFetcher extends AFetcher {
                 }
                 Image image = new Image(filePath, now(), parser.getSource(), match.getUrl(), parser.getTags());
                 database.add(image);
+                fetchedFiles++;
                 try {
                     moveFile(filePath, to);
                 } catch (IOException e) {

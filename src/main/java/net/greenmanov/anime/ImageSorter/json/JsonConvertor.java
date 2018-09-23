@@ -34,7 +34,7 @@ public class JsonConvertor {
      */
     public static JSONObject toJson(Tag tag) {
         JSONObject object = new JSONObject();
-        object.put(TAG_NAME, tag.getValue().replace(' ', '_'));
+        object.put(TAG_NAME, tag.getValue().replace(' ', '_').toLowerCase());
         object.put(TAG_TYPE, tag.getTag().toString());
         return object;
     }
