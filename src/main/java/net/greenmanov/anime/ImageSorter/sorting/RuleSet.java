@@ -19,7 +19,7 @@ import java.util.List;
 public class RuleSet {
     public static final String RULE_TYPE = "type";
 
-    public static final String DEFAULT_FILE = "filter.json";
+    public static final String DEFAULT_FILE = ".filter";
 
     protected List<IRule> rules;
 

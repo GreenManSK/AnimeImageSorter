@@ -13,7 +13,7 @@ import java.nio.file.Path;
  * Json image database containing information about images in the file
  */
 public class JsonDatabase {
-    public static final String DEFAULT_NAME = "database.json";
+    public static final String DEFAULT_NAME = ".database";
     protected static final int INDENT = 2;
 
 
