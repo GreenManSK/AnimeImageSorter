@@ -22,6 +22,8 @@ public class HumanInfoFetcher extends AFetcher {
     protected TextIO textIO;
     protected TextTerminal textTerminal;
 
+    private boolean exit = false;
+
     public HumanInfoFetcher() {
         textIO = TextIoFactory.getTextIO();
         textTerminal = textIO.getTextTerminal();
@@ -37,6 +39,8 @@ public class HumanInfoFetcher extends AFetcher {
      */
     @Override
     protected void fetchFile(Path filePath, Path to, int minSimilarity, Path noMatchDir) throws InterruptedException {
+        if (exit)
+            return;
         Image img = database.get(filePath);
         if (img != null && img.getTags().size() > 0)
             return;
@@ -51,6 +55,8 @@ public class HumanInfoFetcher extends AFetcher {
                 } catch (IOException e) {
                     LOGGER.error("Can't open file " + filePath, e);
                 }
+            } else if (action == ImageAction.EXIT) {
+                exit = true;
             }
         } while (action == ImageAction.OPEN);
         if (action == ImageAction.ADD) {
@@ -145,7 +151,7 @@ public class HumanInfoFetcher extends AFetcher {
      */
     protected ImageAction getImageAction() {
         while (true) {
-            textTerminal.println("[A]DD, [S]KIP, [O]PEN");
+            textTerminal.println("[A]DD, [S]KIP, [O]PEN, [E]XIT");
             char c;
             c = textIO.newCharInputReader().read();
             c = Character.toLowerCase(c);
@@ -156,11 +162,13 @@ public class HumanInfoFetcher extends AFetcher {
                     return ImageAction.SKIP;
                 case 'o':
                     return ImageAction.OPEN;
+                case 'e':
+                    return ImageAction.EXIT;
             }
         }
     }
 
     protected enum ImageAction {
-        ADD, SKIP, OPEN
+        ADD, SKIP, OPEN, EXIT
     }
 }
