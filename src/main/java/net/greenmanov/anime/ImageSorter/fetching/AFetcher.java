@@ -61,6 +61,7 @@ abstract public class AFetcher {
      * @throws InterruptedException When problem with thread sleeping for delay
      */
     public void fetch(Path from, Path to, int minSimilarity, int delay, Path noMatchDir) throws InterruptedException {
+        LOGGER.info("Fetching: " + from);
         this.needDelay = false;
         this.delay = delay;
         checkDirectory(from);

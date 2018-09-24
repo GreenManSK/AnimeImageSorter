@@ -2,19 +2,16 @@
 <Configuration>
     <Appenders>
         <Console name="Console">
-            <PatternLayout>
-                <Pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss} %-5level: %msg%n}"/>
         </Console>
         <File name="File" fileName=".log">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="%d %-5level %logger{36} - %msg%n%throwable%n"/>
         </File>
     </Appenders>
     <Loggers>
         <Root level="ALL">
             <AppenderRef ref="Console"/>
-            <!--<AppenderRef ref="File" level="ERROR"/>-->
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="File" level="ERROR"/>
         </Root>
     </Loggers>
 </Configuration>

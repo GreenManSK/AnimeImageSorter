@@ -1,8 +1,6 @@
 package net.greenmanov.anime.ImageSorter.sorting;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
-import net.greenmanov.iqdb.parsers.Tag;
-import net.greenmanov.iqdb.parsers.TagType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

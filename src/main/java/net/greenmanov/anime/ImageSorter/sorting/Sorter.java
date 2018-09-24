@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,10 +20,12 @@ import java.util.stream.Stream;
 public class Sorter {
     private static final Logger LOGGER = LogManager.getLogger(Sorter.class.getName());
 
+    private Path originalTo;
     protected List<Dir> dirs;
     protected JsonDatabase database;
 
     public void sort(Path from, Path to) {
+        LOGGER.info("Sorting: " + from);
         checkDirectory(from);
         checkDirectory(to);
         try {
@@ -87,7 +90,11 @@ public class Sorter {
      * @throws IOException
      */
     protected void moveFile(Path file, Path dir) throws IOException {
-        Files.move(file, dir.resolve(file.getFileName()));
+        try {
+            Files.move(file, dir.resolve(file.getFileName()));
+        } catch (FileAlreadyExistsException e) {
+            LOGGER.warn("File already exists: " + dir.resolve(file.getFileName()), e);
+        }
     }
 
     /**
@@ -120,6 +127,10 @@ public class Sorter {
      * @throws IOException
      */
     protected List<Dir> buildDirMap(Path to) throws IOException {
+        if (to.equals(originalTo)) {
+            return dirs;
+        }
+        originalTo = to;
         Map<Path, Dir> dirs = new HashMap<>();
         try (Stream<Path> paths = Files.walk(to)) {
             paths.filter(Files::isDirectory).forEach(path -> {

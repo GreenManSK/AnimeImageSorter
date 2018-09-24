@@ -2,7 +2,6 @@ package net.greenmanov.anime.ImageSorter.sorting;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.iqdb.parsers.Tag;
-import org.json.JSONObject;
 
 public interface IRule {
 

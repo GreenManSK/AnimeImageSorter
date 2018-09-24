@@ -24,10 +24,6 @@ public class IqdbFetcher extends AFetcher {
     protected boolean needDelay;
     protected int delay;
 
-    protected long files = 0;
-    protected long fetchedFiles = 0;
-
-
     public static final int MAX_SIZE = IIqdbApi.MAX_FILE_SIZE;
     public static final int RESIZE_IMAGE_DIMENSION_MAX = 1000;
 
@@ -50,7 +46,6 @@ public class IqdbFetcher extends AFetcher {
         this.needDelay = false;
         this.delay = delay;
         super.fetch(from, to, minSimilarity, delay, noMatchDir);
-        LOGGER.info("Finished fetching. Fetched: " + fetchedFiles + "/" + files);
     }
 
     /**
@@ -62,7 +57,6 @@ public class IqdbFetcher extends AFetcher {
      * @param noMatchDir    Dir for files without match, can be null
      */
     protected void fetchFile(Path filePath, Path to, int minSimilarity, Path noMatchDir) throws InterruptedException {
-        files++;
         if (delay > 0 && this.needDelay) {
             Thread.sleep(delay);
         }
@@ -72,6 +66,7 @@ public class IqdbFetcher extends AFetcher {
             LOGGER.info("Already fetched: " + filePath.getFileName());
             return;
         }
+        files++;
         LOGGER.info("Fetching file: " + filePath.getFileName());
         try {
             this.needDelay = true;

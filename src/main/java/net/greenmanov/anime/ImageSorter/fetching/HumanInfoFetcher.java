@@ -3,7 +3,6 @@ package net.greenmanov.anime.ImageSorter.fetching;
 import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.iqdb.parsers.Tag;
 import net.greenmanov.iqdb.parsers.TagType;
-import net.greenmanov.iqdb.parsers.impl.DynamicParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.beryx.textio.TextIO;
