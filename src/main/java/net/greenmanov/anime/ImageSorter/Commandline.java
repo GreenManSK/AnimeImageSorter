@@ -100,7 +100,8 @@ public class Commandline {
                     try (Stream<Path> paths = Files.walk(to)) {
                         paths.filter(Files::isDirectory).forEach(p -> {
                             try {
-                                fetcher.fetch(p, to, minSim, delay, noMatch);
+                                Path pt = to.equals(from) ? p : to;
+                                fetcher.fetch(p, pt, minSim, delay, noMatch);
                             } catch (InterruptedException e) {
                                 LOGGER.error(e);
                             }
@@ -135,7 +136,10 @@ public class Commandline {
             sorter.sort(from, to);
         } else {
             try (Stream<Path> paths = Files.walk(to)) {
-                paths.filter(Files::isDirectory).forEach(p -> sorter.sort(p, to));
+                paths.filter(Files::isDirectory).forEach(p -> {
+                    Path pt = to.equals(from) ? p : to;
+                    sorter.sort(p, pt);
+                });
             } catch (IOException e) {
                 LOGGER.error("Error while walking thought subdirectories", e);
             }
