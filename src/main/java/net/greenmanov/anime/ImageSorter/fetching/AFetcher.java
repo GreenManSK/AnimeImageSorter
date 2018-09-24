@@ -62,6 +62,7 @@ abstract public class AFetcher {
      */
     public void fetch(Path from, Path to, int minSimilarity, int delay, Path noMatchDir) throws InterruptedException {
         LOGGER.info("Fetching: " + from);
+        files = fetchedFiles = 0;
         this.needDelay = false;
         this.delay = delay;
         checkDirectory(from);
