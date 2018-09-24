@@ -1,15 +1,15 @@
-#Anime Image Sorter
+# Anime Image Sorter
 Tool for automatic tagging and sorting of anime images
 
 Use ```mvn exec:java -h``` for help.
 
-##Filters
+## Filters
 Each directory in sorting destination should contain .filter file to specify rules of sorting. This file is array 
 with possibly multiple sorting rules. Rule in the array are joined by logical AND. Subdirectories inherit rules from 
 their roots.
 Each rule have priority, bigger is better!
 
-###All
+### All
 Matches all images
 ```json
 {
@@ -18,7 +18,7 @@ Matches all images
 }
 ```
 
-###NONE
+### NONE
 Matches no image
 ```json
 {
@@ -27,7 +27,7 @@ Matches no image
 }
 ```
 
-###TAG
+### TAG
 Matches tag from category COPYRIGHT with value love_hina. For categories check [Java Iqdb API](https://github.com/GreenManSK/Java-IqdbApi)
 ```json
 {
@@ -38,7 +38,7 @@ Matches tag from category COPYRIGHT with value love_hina. For categories check [
 }
 ```
 
-###MULTIPE_TAG
+### MULTIPE_TAG
 Matches if image has any of the tags (split by ,) in this category.
 ```json
 {
@@ -49,7 +49,7 @@ Matches if image has any of the tags (split by ,) in this category.
 }
 ```
 
-###MULTIPE_TAG_AND
+### MULTIPE_TAG_AND
 Matches only is image has all of the mention tags.
 ```json
 {
@@ -60,7 +60,7 @@ Matches only is image has all of the mention tags.
 }
 ```
 
-###MULTIPE_TAG_ONLY
+### MULTIPE_TAG_ONLY
 Matches only if ALL tags of image in the category are mentioned in the rule.
 ```json
 {
