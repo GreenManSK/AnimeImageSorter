@@ -37,7 +37,7 @@ public class HumanInfoFetcher extends AFetcher {
      */
     @Override
     protected void fetchFile(Path filePath, Path to, int minSimilarity, Path noMatchDir) throws InterruptedException {
-        Image img = database.get(filePath.getFileName().toString());
+        Image img = database.get(filePath);
         if (img != null && img.getTags().size() > 0)
             return;
         textTerminal.println("Image: " + filePath.getFileName());
@@ -71,7 +71,7 @@ public class HumanInfoFetcher extends AFetcher {
      * @param file Image file
      * @param to   Dir for added image
      */
-    protected void addImage(Path file, Path to) {
+    protected void addImage(Path file, Path to) throws InterruptedException {
         char c;
         do {
             textTerminal.println("Use [U]RL or [T]ype [T]ags");
@@ -93,7 +93,7 @@ public class HumanInfoFetcher extends AFetcher {
      */
     protected void addByHand(Path file, Path to) {
         List<Tag> tags = new ArrayList<>();
-        TagType action = null;
+        TagType action;
         do {
             action = textIO.newEnumInputReader(TagType.class).read("Tag type:");
             String tagInput = textIO.newStringInputReader().withMinLength(0).read("Tags[,]:");
@@ -126,29 +126,16 @@ public class HumanInfoFetcher extends AFetcher {
      * @param file Image file
      * @param to   Dir for added image
      */
-    protected void addByUrl(Path file, Path to) {
-        do {
-            String url = textIO
-                    .newStringInputReader()
-                    .withMinLength(0)
-                    .read("URL:");
-            if (url.isEmpty()) {
-                return;
-            }
-            DynamicParser parser = new DynamicParser();
-            try {
-                parser.parse(url);
-                Image image = new Image(file, now(), parser.getSource(), parser.getImage(), parser.getTags());
-                database.add(image);
-                if (to != null) {
-                    moveFile(file, to);
-                }
-                return;
-            } catch (IOException e) {
-                LOGGER.warn("Can't parse URL " + url, e);
-                textTerminal.println("Can't parse URL " + url);
-            }
-        } while (true);
+    protected void addByUrl(Path file, Path to) throws InterruptedException {
+        String url = textIO
+                .newStringInputReader()
+                .withMinLength(0)
+                .read("URL:");
+        if (url.isEmpty()) {
+            return;
+        }
+        delay = 0;
+        fetchUrl(url, file, to);
     }
 
     /**

@@ -1,21 +1,24 @@
 package net.greenmanov.anime.ImageSorter.fetching;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
+import net.greenmanov.anime.ImageSorter.helpers.ImageResizer;
 import net.greenmanov.iqdb.api.*;
 import net.greenmanov.iqdb.parsers.IParser;
 import net.greenmanov.iqdb.parsers.impl.DynamicParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Fetch info about anime images
+ * Fetch info about anime images from iqdb
  */
-public class InfoFetcher extends AFetcher {
-    private static final Logger LOGGER = LogManager.getLogger(InfoFetcher.class.getName());
+public class IqdbFetcher extends AFetcher {
+    private static final Logger LOGGER = LogManager.getLogger(IqdbFetcher.class.getName());
 
     protected IIqdbApi api;
     protected boolean needDelay;
@@ -25,9 +28,10 @@ public class InfoFetcher extends AFetcher {
     protected long fetchedFiles = 0;
 
 
-    public static final int MAX_SIZE = 8388608;
+    public static final int MAX_SIZE = IIqdbApi.MAX_FILE_SIZE;
+    public static final int RESIZE_IMAGE_DIMENSION_MAX = 1000;
 
-    public InfoFetcher() {
+    public IqdbFetcher() {
     }
 
     /**
@@ -59,14 +63,11 @@ public class InfoFetcher extends AFetcher {
      */
     protected void fetchFile(Path filePath, Path to, int minSimilarity, Path noMatchDir) throws InterruptedException {
         files++;
-        //@TODO: Add to FilenameFetcher
-        if (filePath.toFile().length() > MAX_SIZE)
-            return;
         if (delay > 0 && this.needDelay) {
             Thread.sleep(delay);
         }
         this.needDelay = false;
-        Image img = database.get(filePath.getFileName().toString());
+        Image img = database.get(filePath);
         if (img != null && img.getTags().size() > 0) {
             LOGGER.info("Already fetched: " + filePath.getFileName());
             return;
@@ -74,7 +75,13 @@ public class InfoFetcher extends AFetcher {
         LOGGER.info("Fetching file: " + filePath.getFileName());
         try {
             this.needDelay = true;
-            List<Match> matches = api.searchFile(filePath.toFile(), Options.DEFAULT);
+            List<Match> matches;
+            try {
+                matches = api.searchFile(filePath.toFile(), Options.DEFAULT);
+            } catch (FileSizeLimitException e) {
+                LOGGER.warn("Resizing image: " + filePath.getFileName());
+                matches = searchResized(filePath);
+            }
 
             for (Match match : matches) {
                 if (match.getSimilarity() < minSimilarity) {
@@ -108,5 +115,23 @@ public class InfoFetcher extends AFetcher {
         } catch (IOException e) {
             LOGGER.error("Can't get info from iqdb for file" + filePath.getFileName(), e);
         }
+    }
+
+    /**
+     * Resize image so its larger dimension matches RESIZE_IMAGE_DIMENSION_MAX and try to search with it
+     * @param filePath Path to image
+     * @return List of Matches for resized image
+     */
+    private List<Match> searchResized(Path filePath) throws IOException {
+        try {
+            File resized = ImageResizer.resizeImage(filePath, RESIZE_IMAGE_DIMENSION_MAX);
+            if (resized == null) {
+                return Collections.emptyList();
+            }
+            return api.searchFile(resized, Options.DEFAULT);
+        } catch (FileSizeLimitException e) {
+            LOGGER.warn("Resized image is still too large " + filePath, e);
+        }
+        return Collections.emptyList();
     }
 }

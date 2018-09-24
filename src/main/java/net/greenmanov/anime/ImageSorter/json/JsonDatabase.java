@@ -59,6 +59,7 @@ public class JsonDatabase {
 
     /**
      * Save actual json content into file
+     *
      * @throws IOException If any problem with saving the file
      */
     public void save() throws IOException {
@@ -67,15 +68,17 @@ public class JsonDatabase {
 
     /**
      * Save actual json content into file
+     *
      * @param useIndent Specify if file content should be indented
      * @throws IOException If any problem with saving the file
      */
-    public void save(boolean useIndent) throws IOException  {
+    public void save(boolean useIndent) throws IOException {
         Files.write(file, images.toString(useIndent ? INDENT : 0).getBytes());
     }
 
     /**
      * Adds image to database
+     *
      * @param image Image
      */
     public void add(Image image) throws IOException {
@@ -84,11 +87,12 @@ public class JsonDatabase {
 
     /**
      * Gets image by file name
+     *
      * @param name File name
      * @return Image or null if no info for this file exists
      */
     public Image get(String name) {
-        for (Object object: images) {
+        for (Object object : images) {
             JSONObject json = (JSONObject) object;
             if (name.equals(json.getString(JsonConvertor.IMAGE_NAME))) {
                 return JsonConvertor.toImage(json);
@@ -98,7 +102,18 @@ public class JsonDatabase {
     }
 
     /**
+     * Gets image by file name
+     *
+     * @param file File
+     * @return Image or null if no info for this file exists
+     */
+    public Image get(Path file) {
+        return get(file.getFileName().toString());
+    }
+
+    /**
      * Remove image from database by file name if it is in database
+     *
      * @param name File name
      */
     public void remove(String name) throws IOException {

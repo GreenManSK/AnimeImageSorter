@@ -1,11 +1,8 @@
 package net.greenmanov.anime.ImageSorter.fetching;
 
-import net.greenmanov.anime.ImageSorter.helpers.Image;
-import net.greenmanov.iqdb.parsers.impl.DynamicParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,11 +18,6 @@ public class FilenameFetcher extends AFetcher {
     private static final String YANDE_RE_URL = "https://yande.re/post/show/";
 
     private static final Logger LOGGER = LogManager.getLogger(FilenameFetcher.class.getName());
-    protected long files = 0;
-    protected long fetchedFiles = 0;
-
-    protected boolean needDelay;
-    protected int delay;
 
     public FilenameFetcher() {
     }
@@ -42,10 +34,7 @@ public class FilenameFetcher extends AFetcher {
      */
     @Override
     public void fetch(Path from, Path to, int minSimilarity, int delay, Path noMatchDir) throws InterruptedException {
-        this.needDelay = false;
-        this.delay = delay;
         super.fetch(from, to, minSimilarity, delay, noMatchDir);
-        LOGGER.info("Finished fetching. Fetched: " + fetchedFiles + "/" + files);
     }
 
     /**
@@ -68,6 +57,7 @@ public class FilenameFetcher extends AFetcher {
 
     /**
      * Get konachan url by file name if one exists
+     *
      * @param fileName File name
      * @return string url or null
      */
@@ -82,6 +72,7 @@ public class FilenameFetcher extends AFetcher {
 
     /**
      * Get yande.re url by file name if one exists
+     *
      * @param fileName File name
      * @return string url or null
      */
@@ -92,35 +83,5 @@ public class FilenameFetcher extends AFetcher {
             return YANDE_RE_URL + id;
         }
         return null;
-    }
-
-    /**
-     * Fetch data from URL
-     *
-     * @param url  URL to data
-     * @param file Image file
-     * @param to   Dir for added image
-     */
-    protected void fetchUrl(String url, Path file, Path to) throws InterruptedException {
-        if (delay > 0 && this.needDelay) {
-            Thread.sleep(delay);
-        }
-        this.needDelay = false;
-        files++;
-        LOGGER.info("Fetching file: " + file.getFileName());
-        DynamicParser parser = new DynamicParser();
-        try {
-            this.needDelay = true;
-            parser.parse(url);
-            Image image = new Image(file, now(), parser.getSource(), parser.getImage(), parser.getTags());
-            database.add(image);
-            if (to != null) {
-                moveFile(file, to);
-            }
-            LOGGER.info("Added: " + file.getFileName());
-            fetchedFiles++;
-        } catch (IOException e) {
-            LOGGER.warn("Can't parse URL " + url, e);
-        }
     }
 }

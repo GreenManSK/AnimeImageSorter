@@ -54,7 +54,7 @@ public class Sorter {
      * @param file Path to image
      */
     protected void sortImage(Path file) {
-        Image image = database.get(file.getFileName().toString());
+        Image image = database.get(file);
         if (image == null) {
             LOGGER.info("Not in database: " + file.getFileName());
             return;

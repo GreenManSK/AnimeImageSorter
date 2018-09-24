@@ -1,8 +1,10 @@
 package net.greenmanov.anime.ImageSorter.fetching;
 
 import net.greenmanov.anime.ImageSorter.helpers.Filters;
+import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.anime.ImageSorter.json.AutosaveDatabase;
 import net.greenmanov.anime.ImageSorter.json.JsonDatabase;
+import net.greenmanov.iqdb.parsers.impl.DynamicParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,11 +21,17 @@ abstract public class AFetcher {
 
     protected JsonDatabase database;
 
+    protected boolean needDelay;
+    protected int delay;
+
+    protected long files = 0;
+    protected long fetchedFiles = 0;
+
     /**
      * Fetch info for all files in path, saves them into database and moves them
      *
-     * @param from          Source dir
-     * @param to            Dir for fetched files
+     * @param from Source dir
+     * @param to   Dir for fetched files
      * @throws InterruptedException When problem with thread sleeping for delay
      */
     public void fetch(Path from, Path to) throws InterruptedException {
@@ -53,6 +61,8 @@ abstract public class AFetcher {
      * @throws InterruptedException When problem with thread sleeping for delay
      */
     public void fetch(Path from, Path to, int minSimilarity, int delay, Path noMatchDir) throws InterruptedException {
+        this.needDelay = false;
+        this.delay = delay;
         checkDirectory(from);
         checkDirectory(to);
         if (noMatchDir != null) {
@@ -79,6 +89,7 @@ abstract public class AFetcher {
         } catch (IOException e) {
             LOGGER.error("Problem with loading JsonDatabase", e);
         }
+        LOGGER.info("Finished fetching. Fetched: " + fetchedFiles + "/" + files);
     }
 
     /**
@@ -121,6 +132,40 @@ abstract public class AFetcher {
     protected void checkDirectory(Path dir) throws IllegalArgumentException {
         if (!Files.exists(dir) && !Files.isDirectory(dir)) {
             throw new IllegalArgumentException("Directory " + dir.toString() + " do not exists");
+        }
+    }
+
+    /**
+     * Fetch data from URL
+     *
+     * @param url  URL to data
+     * @param file Image file
+     * @param to   Dir for added image
+     */
+    protected void fetchUrl(String url, Path file, Path to) throws InterruptedException {
+        if (delay > 0 && this.needDelay) {
+            Thread.sleep(delay);
+        }
+        this.needDelay = false;
+        files++;
+        LOGGER.info("Fetching file: " + file.getFileName());
+        DynamicParser parser = new DynamicParser();
+        try {
+            this.needDelay = true;
+            parser.parse(url);
+            Image image = database.get(file);
+            if (image != null) {
+                database.remove(image.getName());
+            }
+            image= new Image(file, now(), parser.getSource(), parser.getImage(), parser.getTags());
+            database.add(image);
+            if (to != null) {
+                moveFile(file, to);
+            }
+            LOGGER.info("Added: " + file.getFileName());
+            fetchedFiles++;
+        } catch (IOException e) {
+            LOGGER.warn("Can't parse URL " + url, e);
         }
     }
 }
