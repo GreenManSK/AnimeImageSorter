@@ -17,7 +17,6 @@ public class JsonDatabase {
     public static final String DEFAULT_NAME = ".database";
     protected static final int INDENT = 2;
 
-
     protected Path file;
     protected JSONArray images;
 
@@ -27,13 +26,18 @@ public class JsonDatabase {
      * @param file File path
      * @throws IOException if there is any problem with loading or creating json file
      */
-    public JsonDatabase(Path file) throws IOException {
+    JsonDatabase(Path file) throws IOException {
         this.file = file;
         if (Files.exists(file)) {
             loadFile(file);
         } else {
             createNewFile(file);
         }
+    }
+
+    JsonDatabase(Path file, JSONArray images) {
+        this.file = file;
+        this.images = images;
     }
 
     /**
@@ -78,7 +82,7 @@ public class JsonDatabase {
      * @throws IOException If any problem with saving the file
      */
     public void save(boolean useIndent) throws IOException {
-        FileUtils.writeStringToFile(file.toFile(), images.toString(), StandardCharsets.UTF_8);
+        FileUtils.writeStringToFile(file.toFile(), images.toString(useIndent ? INDENT : 0), StandardCharsets.UTF_8);
     }
 
     /**

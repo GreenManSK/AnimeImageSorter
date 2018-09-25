@@ -2,6 +2,7 @@ package net.greenmanov.anime.ImageSorter.sorting;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.iqdb.parsers.Tag;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -25,5 +26,10 @@ public class MultiTagAndRule extends MultiTagRule {
             result = result && rule.match(image);
         }
         return result;
+    }
+
+    public static MultiTagRule fromJson(JSONObject object) {
+        MultiTagRule rule = MultiTagRule.fromJson(object);
+        return new MultiTagAndRule(rule.rules, rule.priority);
     }
 }

@@ -86,6 +86,7 @@ public class Commandline {
         System.out.println(commandLine.getOptionValue(FROM));
         Path from = Paths.get(commandLine.getOptionValue(FROM));
         Path to = commandLine.hasOption(TO) ? Paths.get(commandLine.getOptionValue(TO)) : from;
+        boolean hadTo = commandLine.hasOption(TO);
         boolean subdirs = commandLine.hasOption(SUBDIRS);
 
         try {
@@ -100,7 +101,7 @@ public class Commandline {
                     try (Stream<Path> paths = Files.walk(to)) {
                         paths.filter(Files::isDirectory).forEach(p -> {
                             try {
-                                Path pt = to.equals(from) ? p : to;
+                                Path pt = hadTo ? to : p;
                                 fetcher.fetch(p, pt, minSim, delay, noMatch);
                             } catch (InterruptedException e) {
                                 LOGGER.error(e);
@@ -128,6 +129,7 @@ public class Commandline {
             throw new IllegalArgumentException("Need path to from directory");
         }
         Path from = Paths.get(commandLine.getOptionValue(FROM));
+        boolean hadTo = commandLine.hasOption(TO);
         Path to = commandLine.hasOption(TO) ? Paths.get(commandLine.getOptionValue(TO)) : from;
         boolean subdirs = commandLine.hasOption(SUBDIRS);
 
@@ -137,7 +139,7 @@ public class Commandline {
         } else {
             try (Stream<Path> paths = Files.walk(to)) {
                 paths.filter(Files::isDirectory).forEach(p -> {
-                    Path pt = to.equals(from) ? p : to;
+                    Path pt = hadTo ? to : p;
                     sorter.sort(p, pt);
                 });
             } catch (IOException e) {

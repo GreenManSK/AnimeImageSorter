@@ -1,6 +1,7 @@
 package net.greenmanov.anime.ImageSorter.json;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
+import org.json.JSONArray;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -9,8 +10,12 @@ import java.nio.file.Path;
  * JsonDatabase that autosave after each change
  */
 public class AutosaveDatabase extends JsonDatabase {
-    public AutosaveDatabase(Path file) throws IOException {
+    AutosaveDatabase(Path file) throws IOException {
         super(file);
+    }
+
+    public AutosaveDatabase(Path file, JSONArray images) {
+        super(file, images);
     }
 
     /**

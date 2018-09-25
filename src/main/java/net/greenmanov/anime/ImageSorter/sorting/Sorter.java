@@ -2,8 +2,8 @@ package net.greenmanov.anime.ImageSorter.sorting;
 
 import net.greenmanov.anime.ImageSorter.helpers.Filters;
 import net.greenmanov.anime.ImageSorter.helpers.Image;
-import net.greenmanov.anime.ImageSorter.json.AutosaveDatabase;
 import net.greenmanov.anime.ImageSorter.json.JsonDatabase;
+import net.greenmanov.anime.ImageSorter.json.JsonDatabaseProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,7 +31,7 @@ public class Sorter {
         try {
             dirs = buildDirMap(to);
             try {
-                database = new AutosaveDatabase(from.resolve(JsonDatabase.DEFAULT_NAME));
+                database = JsonDatabaseProvider.getAutosaveDatabase(from.resolve(JsonDatabase.DEFAULT_NAME));
                 try (Stream<Path> paths = Files.walk(from)) {
                     paths.filter(Files::isRegularFile)
                             .filter(Filters::isImage)
@@ -43,10 +43,9 @@ public class Sorter {
             } catch (IOException e) {
                 LOGGER.error("Can't load image database", e);
             }
-            for (Dir dir: dirs) {
+            for (Dir dir : dirs) {
                 dir.getDatabase().save(true);
             }
-            database.save(true);
         } catch (IOException e) {
             LOGGER.error("Can't build directory map", e);
         }
@@ -54,6 +53,7 @@ public class Sorter {
 
     /**
      * Sort image file
+     *
      * @param file Path to image
      */
     protected void sortImage(Path file) {
@@ -72,8 +72,10 @@ public class Sorter {
             return;
         }
         try {
-            best.getDatabase().add(image);
-            database.remove(file.getFileName().toString());
+            if (!database.equals(best.getDatabase())) {
+                database.remove(file.getFileName().toString());
+                best.getDatabase().add(image);
+            }
             moveFile(file, best.getPath());
             LOGGER.info("Moving " + file + " to " + best.getPath());
         } catch (IOException e) {
@@ -99,13 +101,14 @@ public class Sorter {
 
     /**
      * Get best matching dir
+     *
      * @param image Image file
      * @return Best matching dir or null if none matchs
      */
     protected Dir getBest(Image image) {
         Dir result = null;
         int priority = Integer.MIN_VALUE;
-        for (Dir dir: dirs) {
+        for (Dir dir : dirs) {
             IRule matchingRule = dir.getRuleSet().match(image);
             if (matchingRule != null && matchingRule.getPriority() > priority) {
                 priority = matchingRule.getPriority();
@@ -122,6 +125,7 @@ public class Sorter {
 
     /**
      * Build sorting map of directories
+     *
      * @param to Root of directories
      * @return List of possible directories with RuleSets
      * @throws IOException

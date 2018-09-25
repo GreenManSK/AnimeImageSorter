@@ -2,8 +2,8 @@ package net.greenmanov.anime.ImageSorter.fetching;
 
 import net.greenmanov.anime.ImageSorter.helpers.Filters;
 import net.greenmanov.anime.ImageSorter.helpers.Image;
-import net.greenmanov.anime.ImageSorter.json.AutosaveDatabase;
 import net.greenmanov.anime.ImageSorter.json.JsonDatabase;
+import net.greenmanov.anime.ImageSorter.json.JsonDatabaseProvider;
 import net.greenmanov.iqdb.parsers.impl.DynamicParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,7 +76,7 @@ abstract public class AFetcher {
             if (to != null)
                 pathSet.add(to);
             for (Path path: pathSet) {
-                databases.put(path, new AutosaveDatabase(path.resolve(JsonDatabase.DEFAULT_NAME)));
+                databases.put(path, JsonDatabaseProvider.getAutosaveDatabase(path.resolve(JsonDatabase.DEFAULT_NAME)));
             }
 
             try (Stream<Path> paths = Files.walk(from)) {
