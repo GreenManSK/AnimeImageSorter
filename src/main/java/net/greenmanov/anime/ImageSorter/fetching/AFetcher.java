@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 abstract public class AFetcher {
     private static final Logger LOGGER = LogManager.getLogger(AFetcher.class.getName());
 
-    protected Map<Path,JsonDatabase> databases;
+    protected Map<Path,JsonDatabase> databases = new HashMap<>();
 
     protected boolean needDelay;
     protected int delay;
@@ -76,7 +76,7 @@ abstract public class AFetcher {
             if (to != null)
                 pathSet.add(to);
             for (Path path: pathSet) {
-                databases.put(path, new AutosaveDatabase(path));
+                databases.put(path, new AutosaveDatabase(path.resolve(JsonDatabase.DEFAULT_NAME)));
             }
 
             try (Stream<Path> paths = Files.walk(from)) {
