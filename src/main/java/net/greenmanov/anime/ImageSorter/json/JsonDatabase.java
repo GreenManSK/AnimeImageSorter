@@ -1,6 +1,7 @@
 package net.greenmanov.anime.ImageSorter.json;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -54,7 +55,11 @@ public class JsonDatabase {
      * @throws IOException If any problem with reading the file
      */
     protected void loadFile(Path file) throws IOException {
-        images = new JSONArray(String.join("\n", Files.readAllLines(file, StandardCharsets.UTF_8)));
+        images = new JSONArray(
+                String.join("\n",
+                        Files.readAllLines(file, StandardCharsets.UTF_8)
+                )
+        );
     }
 
     /**
@@ -73,7 +78,7 @@ public class JsonDatabase {
      * @throws IOException If any problem with saving the file
      */
     public void save(boolean useIndent) throws IOException {
-        Files.write(file, images.toString(useIndent ? INDENT : 0).getBytes());
+        FileUtils.writeStringToFile(file.toFile(), images.toString(), StandardCharsets.UTF_8);
     }
 
     /**

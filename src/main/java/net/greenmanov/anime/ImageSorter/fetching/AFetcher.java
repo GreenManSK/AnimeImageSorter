@@ -176,7 +176,7 @@ abstract public class AFetcher {
             }
             LOGGER.info("Added: " + file.getFileName());
             fetchedFiles++;
-        } catch (IOException e) {
+        } catch (IOException|NullPointerException e) {
             LOGGER.warn("Can't parse URL " + url, e);
         }
     }
