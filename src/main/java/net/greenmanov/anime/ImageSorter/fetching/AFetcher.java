@@ -11,15 +11,14 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 abstract public class AFetcher {
     private static final Logger LOGGER = LogManager.getLogger(AFetcher.class.getName());
 
-    protected JsonDatabase database;
+    protected Map<Path,JsonDatabase> databases;
 
     protected boolean needDelay;
     protected int delay;
@@ -72,7 +71,13 @@ abstract public class AFetcher {
         }
 
         try {
-            this.database = new AutosaveDatabase(to.resolve(JsonDatabase.DEFAULT_NAME));
+            Set<Path> pathSet = new HashSet<>();
+            pathSet.add(from);
+            if (to != null)
+                pathSet.add(to);
+            for (Path path: pathSet) {
+                databases.put(path, new AutosaveDatabase(path));
+            }
 
             try (Stream<Path> paths = Files.walk(from)) {
                 List<Path> pathList = paths
@@ -87,7 +92,9 @@ abstract public class AFetcher {
                 LOGGER.error("Problem while reading files form directory", e);
             }
 
-            this.database.save(true);
+            for (JsonDatabase db : databases.values()) {
+                db.save(true);
+            }
         } catch (IOException e) {
             LOGGER.error("Problem with loading JsonDatabase", e);
         }
@@ -151,6 +158,9 @@ abstract public class AFetcher {
         this.needDelay = false;
         files++;
         LOGGER.info("Fetching file: " + file.getFileName());
+
+        JsonDatabase database = getDatabase(file, to);
+
         DynamicParser parser = new DynamicParser();
         try {
             this.needDelay = true;
@@ -168,6 +178,20 @@ abstract public class AFetcher {
             fetchedFiles++;
         } catch (IOException e) {
             LOGGER.warn("Can't parse URL " + url, e);
+        }
+    }
+
+    /**
+     * Get JsonDatabase for the dir where file will end up
+     * @param file File or file dir
+     * @param to Final dir
+     * @return JsonDatabase
+     */
+    protected JsonDatabase getDatabase(Path file, Path to) {
+        if (to == null) {
+            return databases.get(file.toFile().isDirectory() ? file : file.getParent());
+        } else {
+            return databases.get(to);
         }
     }
 }

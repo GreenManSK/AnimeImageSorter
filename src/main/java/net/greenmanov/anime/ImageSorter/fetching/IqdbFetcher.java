@@ -2,6 +2,7 @@ package net.greenmanov.anime.ImageSorter.fetching;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
 import net.greenmanov.anime.ImageSorter.helpers.ImageResizer;
+import net.greenmanov.anime.ImageSorter.json.JsonDatabase;
 import net.greenmanov.iqdb.api.*;
 import net.greenmanov.iqdb.parsers.IParser;
 import net.greenmanov.iqdb.parsers.impl.DynamicParser;
@@ -61,6 +62,7 @@ public class IqdbFetcher extends AFetcher {
             Thread.sleep(delay);
         }
         this.needDelay = false;
+        JsonDatabase database = getDatabase(filePath, to);
         Image img = database.get(filePath);
         if (img != null && img.getTags().size() > 0) {
             LOGGER.info("Already fetched: " + filePath.getFileName());

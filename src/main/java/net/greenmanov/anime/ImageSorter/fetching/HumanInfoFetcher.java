@@ -1,6 +1,7 @@
 package net.greenmanov.anime.ImageSorter.fetching;
 
 import net.greenmanov.anime.ImageSorter.helpers.Image;
+import net.greenmanov.anime.ImageSorter.json.JsonDatabase;
 import net.greenmanov.iqdb.parsers.Tag;
 import net.greenmanov.iqdb.parsers.TagType;
 import org.apache.logging.log4j.LogManager;
@@ -40,6 +41,7 @@ public class HumanInfoFetcher extends AFetcher {
     protected void fetchFile(Path filePath, Path to, int minSimilarity, Path noMatchDir) throws InterruptedException {
         if (exit)
             return;
+        JsonDatabase database = getDatabase(filePath, to);
         Image img = database.get(filePath);
         if (img != null && img.getTags().size() > 0)
             return;
@@ -111,6 +113,7 @@ public class HumanInfoFetcher extends AFetcher {
         } while (action != null);
         Image image = new Image(file, now(), null, null, tags);
         try {
+            JsonDatabase database = getDatabase(file, to);
             database.add(image);
         } catch (IOException e) {
             LOGGER.error("Can't save database!", e);
